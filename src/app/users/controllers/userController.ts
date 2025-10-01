@@ -4,18 +4,23 @@ import { UserService } from '../services/UserService';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  getAllUsers = async (_req: Request, res: Response): Promise<void> => {
-    const result = await this.userService.getAllUsers();
+  getAllUsers = async (req: Request, res: Response): Promise<void> => {
+    // Extraer parámetros de paginación de la query
+    const page = req.query['page'] ? parseInt(req.query['page'] as string) : undefined;
+    const limit = req.query['limit'] ? parseInt(req.query['limit'] as string) : undefined;
+    
+    const paginationParams = { page, limit };
+    const result = await this.userService.getAllUsers(paginationParams);
     
     if (result.success) {
       res.json({
         success: true,
         data: result.data,
-        count: result.data?.length || 0,
         message: result.message
       });
     } else {
-      res.status(500).json({
+      const statusCode = result.error?.includes('página') || result.error?.includes('límite') ? 400 : 500;
+      res.status(statusCode).json({
         success: false,
         error: result.error
       });

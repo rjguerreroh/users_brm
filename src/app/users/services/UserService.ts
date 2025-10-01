@@ -1,25 +1,68 @@
 import { User } from '../entities/User';
 import { Repository } from 'typeorm';
-import { CreateUserData, UpdateUserData, UserServiceResponse } from '../interfaces';
+import { CreateUserData, UpdateUserData, UserServiceResponse, PaginationParams, PaginatedResponse } from '../interfaces';
 
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
   /**
-   * Obtiene todos los usuarios con lógica de negocio
+   * Obtiene todos los usuarios con paginación
    */
-  async getAllUsers(): Promise<UserServiceResponse<User[]>> {
+  async getAllUsers(paginationParams?: PaginationParams): Promise<UserServiceResponse<PaginatedResponse<User>>> {
     try {
-      const users = await this.userRepository.find({
-        order: { createdAt: 'DESC' }
+      // Valores por defecto para paginación
+      const page = paginationParams?.page ?? 1;
+      const limit = paginationParams?.limit ?? 10;
+      
+      // Validar parámetros de paginación
+      if (page < 1) {
+        return {
+          success: false,
+          error: 'La página debe ser mayor a 0'
+        };
+      }
+      
+      if (limit < 1 || limit > 100) {
+        return {
+          success: false,
+          error: 'El límite debe estar entre 1 y 100'
+        };
+      }
+
+      // Calcular offset
+      const skip = (page - 1) * limit;
+
+      // Obtener usuarios con paginación
+      const [users, total] = await this.userRepository.findAndCount({
+        order: { createdAt: 'DESC' },
+        skip,
+        take: limit
       });
 
+      // Sanitizar datos de usuarios
       const sanitizedUsers = users.map(user => this.sanitizeUserData(user));
+
+      // Calcular información de paginación
+      const totalPages = Math.ceil(total / limit);
+      const hasNext = page < totalPages;
+      const hasPrev = page > 1;
+
+      const paginatedResponse: PaginatedResponse<User> = {
+        data: sanitizedUsers,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNext,
+          hasPrev
+        }
+      };
 
       return {
         success: true,
-        data: sanitizedUsers,
-        message: `Se encontraron ${sanitizedUsers.length} usuarios`
+        data: paginatedResponse,
+        message: `Se encontraron ${total} usuarios (página ${page} de ${totalPages})`
       };
     } catch (error) {
       console.error('Error en UserService.getAllUsers:', error);

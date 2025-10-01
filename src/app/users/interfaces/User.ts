@@ -16,3 +16,20 @@ export interface UserServiceResponse<T = any> {
   message?: string;
   error?: string;
 }
+
+export interface PaginationParams {
+  page?: number | undefined;
+  limit?: number | undefined;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
