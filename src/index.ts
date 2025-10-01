@@ -1,9 +1,10 @@
+import 'reflect-metadata';
 import 'dotenv/config';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import userRoutes from './routes/userRoutes';
-import { testConnection } from './config/database';
+import { initializeDatabase } from './config/typeorm';
 
 const app: Application = express();
 const PORT = process.env['PORT'] || 3000;
@@ -58,19 +59,15 @@ app.use((err: Error, _req: Request, res: Response, _next: any) => {
 // Inicializar base de datos y servidor
 const startServer = async () => {
   try {
-    // Probar conexión a la base de datos
-    const isConnected = await testConnection();
-    if (!isConnected) {
-      console.error('ERROR: No se pudo conectar a la base de datos');
-      process.exit(1);
-    }
+    // Inicializar TypeORM
+    await initializeDatabase();
 
     // Iniciar servidor
     app.listen(PORT, () => {
       console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
       console.log(`Health check disponible en http://localhost:${PORT}/health`);
       console.log(`Entorno: ${NODE_ENV}`);
-      console.log(`Base de datos: PostgreSQL conectada`);
+      console.log(`🗄️ Base de datos: PostgreSQL con TypeORM conectada`);
       console.log('\n');
       console.log('ENDPOINTS');
       console.log('='.repeat(80));

@@ -6,28 +6,48 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
-    "watch": "ts-node --watch src/index.ts",
-    "clean": "rimraf dist"
+    "dev": "ts-node --require reflect-metadata src/index.ts",
+    "watch": "ts-node --require reflect-metadata --watch src/index.ts",
+    "clean": "rimraf dist",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:generate": "npm run typeorm -- migration:generate -d src/config/typeorm.ts",
+    "migration:run": "npm run typeorm -- migration:run -d src/config/typeorm.ts",
+    "migration:revert": "npm run typeorm -- migration:revert -d src/config/typeorm.ts",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:restart": "docker-compose restart",
+    "docker:clean": "docker-compose down -v --remove-orphans"
   },
-  "keywords": ["nodejs", "typescript", "api", "users", "postgresql"],
+  "keywords": [
+    "nodejs",
+    "typescript",
+    "api",
+    "users",
+    "postgresql"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.10.0",
-    "@types/express": "^4.17.21",
     "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/joi": "^17.2.3",
+    "@types/node": "^20.10.0",
     "@types/pg": "^8.10.9",
-    "typescript": "^5.3.0",
-    "ts-node": "^10.9.0",
+    "@types/reflect-metadata": "^0.1.0",
     "nodemon": "^3.0.0",
-    "rimraf": "^5.0.0"
+    "rimraf": "^5.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.3.0"
   },
   "dependencies": {
-    "express": "^4.18.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.0",
     "helmet": "^7.1.0",
+    "joi": "^18.0.1",
     "pg": "^8.11.3",
-    "dotenv": "^16.3.1"
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.27"
   }
 }
