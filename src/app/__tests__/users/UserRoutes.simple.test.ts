@@ -15,6 +15,7 @@ const mockController = {
   createUser: jest.fn(),
   updateUser: jest.fn(),
   deleteUser: jest.fn(),
+  searchUsers: jest.fn(),
 };
 
 describe('UserRoutes - Simple Tests', () => {

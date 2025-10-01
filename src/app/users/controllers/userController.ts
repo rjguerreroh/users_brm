@@ -27,6 +27,37 @@ export class UserController {
     }
   };
 
+  searchUsers = async (req: Request, res: Response): Promise<void> => {
+    // Extraer parámetros de búsqueda de la query
+    const searchParams = {
+      search: req.query['search'] as string,
+      name: req.query['name'] as string,
+      email: req.query['email'] as string,
+      ageMin: req.query['ageMin'] ? parseInt(req.query['ageMin'] as string) : undefined,
+      ageMax: req.query['ageMax'] ? parseInt(req.query['ageMax'] as string) : undefined,
+      sortBy: req.query['sortBy'] as 'name' | 'email' | 'age' | 'createdAt' | 'updatedAt',
+      sortOrder: req.query['sortOrder'] as 'ASC' | 'DESC',
+      page: req.query['page'] ? parseInt(req.query['page'] as string) : undefined,
+      limit: req.query['limit'] ? parseInt(req.query['limit'] as string) : undefined,
+    };
+
+    const result = await this.userService.searchUsers(searchParams);
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        data: result.data,
+        message: result.message
+      });
+    } else {
+      const statusCode = result.error?.includes('página') || result.error?.includes('límite') ? 400 : 500;
+      res.status(statusCode).json({
+        success: false,
+        error: result.error
+      });
+    }
+  };
+
   getUserById = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const userId = parseInt(id!);

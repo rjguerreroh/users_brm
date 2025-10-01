@@ -96,7 +96,8 @@ npm run docker:clean   # Limpiar volúmenes
 - `GET /health` - Health check
 
 ### Usuarios
-- `GET /api/users` - Listar todos los usuarios
+- `GET /api/users` - Listar todos los usuarios (con paginación)
+- `GET /api/users/search` - Búsqueda avanzada de usuarios
 - `GET /api/users/:id` - Obtener usuario por ID
 - `POST /api/users` - Crear nuevo usuario
 - `PUT /api/users/:id` - Actualizar usuario
@@ -120,6 +121,22 @@ curl -X POST http://localhost:3000/api/users \
 curl http://localhost:3000/api/users
 ```
 
+### Paginación de usuarios
+```bash
+# Página específica
+curl "http://localhost:3000/api/users?page=2"
+
+# Límite de elementos por página
+curl "http://localhost:3000/api/users?limit=5"
+
+# Combinación de paginación
+curl "http://localhost:3000/api/users?page=2&limit=5"
+```
+
+#### Parámetros de paginación:
+- `page` - Número de página (por defecto: 1)
+- `limit` - Elementos por página (por defecto: 10, máximo: 100)
+
 ### Obtener usuario por ID
 ```bash
 curl http://localhost:3000/api/users/1
@@ -139,6 +156,90 @@ curl -X PUT http://localhost:3000/api/users/1 \
 ### Eliminar usuario
 ```bash
 curl -X DELETE http://localhost:3000/api/users/1
+```
+
+### Búsqueda avanzada de usuarios
+```bash
+# Búsqueda básica
+curl "http://localhost:3000/api/users/search?search=Juan"
+
+# Búsqueda por rango de edad
+curl "http://localhost:3000/api/users/search?ageMin=25&ageMax=30"
+
+# Búsqueda con ordenamiento
+curl "http://localhost:3000/api/users/search?sortBy=name&sortOrder=ASC"
+
+# Búsqueda con paginación
+curl "http://localhost:3000/api/users/search?page=2&limit=5"
+
+# Búsqueda combinada
+curl "http://localhost:3000/api/users/search?search=Juan&ageMin=25&sortBy=name&sortOrder=ASC&page=1&limit=10"
+```
+
+#### Parámetros de búsqueda disponibles:
+- `search` - Búsqueda general en nombre y email
+- `name` - Filtrar por nombre específico
+- `email` - Filtrar por email específico
+- `ageMin` - Edad mínima
+- `ageMax` - Edad máxima
+- `sortBy` - Campo de ordenamiento (name, email, age, createdAt, updatedAt)
+- `sortOrder` - Orden (ASC, DESC)
+- `page` - Número de página (por defecto: 1)
+- `limit` - Elementos por página (por defecto: 10, máximo: 100)
+
+## 📋 Estructura de respuesta
+
+### Respuesta de paginación
+```json
+{
+  "success": true,
+  "data": {
+    "data": [
+      {
+        "id": 1,
+        "name": "Juan Pérez",
+        "email": "juan@example.com",
+        "age": 30,
+        "createdAt": "2025-10-01T05:49:33.099Z",
+        "updatedAt": "2025-10-01T05:49:33.099Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 25,
+      "totalPages": 3,
+      "hasNext": true,
+      "hasPrev": false
+    }
+  },
+  "message": "Se encontraron 25 usuarios (página 1 de 3)"
+}
+```
+
+### Respuesta de búsqueda avanzada
+```json
+{
+  "success": true,
+  "data": {
+    "data": [...],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 5,
+      "totalPages": 1,
+      "hasNext": false,
+      "hasPrev": false
+    },
+    "filters": {
+      "search": "Juan",
+      "ageMin": 25,
+      "sortBy": "name",
+      "sortOrder": "ASC"
+    }
+  },
+  "message": "Se encontraron 5 usuarios con los filtros aplicados (página 1 de 1)"
+}
 ```
 
 ## 🏗️ Estructura del proyecto

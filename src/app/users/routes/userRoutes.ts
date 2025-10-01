@@ -4,13 +4,13 @@ import {
   createUserSchema, 
   updateUserSchema, 
   userIdSchema, 
-  userQuerySchema 
+  userQuerySchema
 } from '../schemas/userSchemas';
 import { 
   validateCreateUser, 
   validateUpdateUser, 
   validateUserId, 
-  validateUserQuery 
+  validateUserQuery
 } from '../middleware/validation';
 
 export class UserRoutes {
@@ -25,6 +25,9 @@ export class UserRoutes {
 
   private setupRoutes() {
     // Rutas para usuarios con validaciones
+    // IMPORTANTE: Las rutas específicas deben ir ANTES que las rutas con parámetros
+    this.router.get('/search', this.userController.searchUsers);
+
     this.router.get('/', 
       validateUserQuery(userQuerySchema, 'query'),
       this.userController.getAllUsers

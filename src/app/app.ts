@@ -82,11 +82,18 @@ class App {
         console.log(`  GET  http://localhost:${this.port}/           - Información de la API`);
         console.log(`  GET  http://localhost:${this.port}/health      - Health check`);
         console.log('\n ENDPOINTS DE USUARIOS:');
-        console.log(`  GET    http://localhost:${this.port}/api/users     - Listar todos los usuarios`);
-        console.log(`  GET    http://localhost:${this.port}/api/users/:id - Obtener usuario por ID`);
-        console.log(`  POST   http://localhost:${this.port}/api/users     - Crear nuevo usuario`);
-        console.log(`  PUT    http://localhost:${this.port}/api/users/:id - Actualizar usuario`);
-        console.log(`  DELETE http://localhost:${this.port}/api/users/:id - Eliminar usuario`);
+        console.log(`  GET    http://localhost:${this.port}/api/users        - Listar usuarios (con paginación: ?page=1&limit=10)`);
+        console.log(`  GET    http://localhost:${this.port}/api/users/search - Búsqueda avanzada (filtros, ordenamiento, paginación)`);
+        console.log(`  GET    http://localhost:${this.port}/api/users/:id   - Obtener usuario por ID`);
+        console.log(`  POST   http://localhost:${this.port}/api/users       - Crear nuevo usuario`);
+        console.log(`  PUT    http://localhost:${this.port}/api/users/:id   - Actualizar usuario`);
+        console.log(`  DELETE http://localhost:${this.port}/api/users/:id   - Eliminar usuario`);
+        
+        console.log('\n EJEMPLOS DE USO:');
+        console.log(`  Paginación:     curl "http://localhost:${this.port}/api/users?page=2&limit=5"`);
+        console.log(`  Búsqueda:       curl "http://localhost:${this.port}/api/users/search?search=Juan"`);
+        console.log(`  Filtros:         curl "http://localhost:${this.port}/api/users/search?ageMin=25&ageMax=30"`);
+        console.log(`  Ordenamiento:    curl "http://localhost:${this.port}/api/users/search?sortBy=name&sortOrder=ASC"`);
       });
 
     } catch (error) {

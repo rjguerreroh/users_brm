@@ -33,3 +33,36 @@ export interface PaginatedResponse<T> {
     hasPrev: boolean;
   };
 }
+
+export interface SearchParams {
+  search?: string | undefined;
+  name?: string | undefined;
+  email?: string | undefined;
+  ageMin?: number | undefined;
+  ageMax?: number | undefined;
+  sortBy?: 'name' | 'email' | 'age' | 'createdAt' | 'updatedAt' | undefined;
+  sortOrder?: 'ASC' | 'DESC' | undefined;
+  page?: number | undefined;
+  limit?: number | undefined;
+}
+
+export interface SearchResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+  filters: {
+    search?: string | undefined;
+    name?: string | undefined;
+    email?: string | undefined;
+    ageMin?: number | undefined;
+    ageMax?: number | undefined;
+    sortBy: string;
+    sortOrder: string;
+  };
+}

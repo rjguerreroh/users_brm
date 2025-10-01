@@ -1,6 +1,6 @@
 import { User } from '../entities/User';
 import { Repository } from 'typeorm';
-import { CreateUserData, UpdateUserData, UserServiceResponse, PaginationParams, PaginatedResponse } from '../interfaces';
+import { CreateUserData, UpdateUserData, UserServiceResponse, PaginationParams, PaginatedResponse, SearchParams, SearchResponse } from '../interfaces';
 
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
@@ -69,6 +69,112 @@ export class UserService {
       return {
         success: false,
         error: 'Error interno al obtener usuarios'
+      };
+    }
+  }
+
+  /**
+   * Búsqueda avanzada de usuarios con filtros y ordenamiento
+   */
+  async searchUsers(searchParams: SearchParams): Promise<UserServiceResponse<SearchResponse<User>>> {
+    try {
+      // Valores por defecto
+      const page = searchParams.page ?? 1;
+      const limit = searchParams.limit ?? 10;
+      const sortBy = searchParams.sortBy ?? 'createdAt';
+      const sortOrder = searchParams.sortOrder ?? 'DESC';
+      
+      // Validar parámetros de paginación
+      if (page < 1) {
+        return {
+          success: false,
+          error: 'La página debe ser mayor a 0'
+        };
+      }
+      
+      if (limit < 1 || limit > 100) {
+        return {
+          success: false,
+          error: 'El límite debe estar entre 1 y 100'
+        };
+      }
+
+      // Construir query builder
+      const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+      // Aplicar filtros de búsqueda
+      if (searchParams.search) {
+        queryBuilder.andWhere(
+          '(user.name ILIKE :search OR user.email ILIKE :search)',
+          { search: `%${searchParams.search}%` }
+        );
+      }
+
+      if (searchParams.name) {
+        queryBuilder.andWhere('user.name ILIKE :name', { name: `%${searchParams.name}%` });
+      }
+
+      if (searchParams.email) {
+        queryBuilder.andWhere('user.email ILIKE :email', { email: `%${searchParams.email}%` });
+      }
+
+      if (searchParams.ageMin !== undefined) {
+        queryBuilder.andWhere('user.age >= :ageMin', { ageMin: searchParams.ageMin });
+      }
+
+      if (searchParams.ageMax !== undefined) {
+        queryBuilder.andWhere('user.age <= :ageMax', { ageMax: searchParams.ageMax });
+      }
+
+      // Aplicar ordenamiento
+      queryBuilder.orderBy(`user.${sortBy}`, sortOrder);
+
+      // Aplicar paginación
+      const skip = (page - 1) * limit;
+      queryBuilder.skip(skip).take(limit);
+
+      // Ejecutar consulta
+      const [users, total] = await queryBuilder.getManyAndCount();
+
+      // Sanitizar datos de usuarios
+      const sanitizedUsers = users.map(user => this.sanitizeUserData(user));
+
+      // Calcular información de paginación
+      const totalPages = Math.ceil(total / limit);
+      const hasNext = page < totalPages;
+      const hasPrev = page > 1;
+
+      const searchResponse: SearchResponse<User> = {
+        data: sanitizedUsers,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNext,
+          hasPrev
+        },
+        filters: {
+          search: searchParams.search || undefined,
+          name: searchParams.name || undefined,
+          email: searchParams.email || undefined,
+          ageMin: searchParams.ageMin || undefined,
+          ageMax: searchParams.ageMax || undefined,
+          sortBy,
+          sortOrder
+        }
+      };
+
+      return {
+        success: true,
+        data: searchResponse,
+        message: `Se encontraron ${total} usuarios con los filtros aplicados (página ${page} de ${totalPages})`
+      };
+    } catch (error) {
+      console.error('Error en UserService.searchUsers:', error);
+      return {
+        success: false,
+        error: 'Error interno al buscar usuarios'
       };
     }
   }

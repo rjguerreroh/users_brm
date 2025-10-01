@@ -130,6 +130,141 @@ export const userQuerySchema = Joi.object({
     .messages({
       'string.max': 'El término de búsqueda no puede exceder 255 caracteres'
     }),
+
+  name: Joi.string()
+    .max(255)
+    .trim()
+    .optional()
+    .messages({
+      'string.max': 'El nombre no puede exceder 255 caracteres'
+    }),
+
+  email: Joi.string()
+    .email()
+    .max(255)
+    .trim()
+    .optional()
+    .messages({
+      'string.email': 'El email debe tener un formato válido',
+      'string.max': 'El email no puede exceder 255 caracteres'
+    }),
+
+  ageMin: Joi.number()
+    .integer()
+    .min(1)
+    .max(120)
+    .optional()
+    .messages({
+      'number.base': 'La edad mínima debe ser un número',
+      'number.integer': 'La edad mínima debe ser un número entero',
+      'number.min': 'La edad mínima debe ser al menos 1',
+      'number.max': 'La edad mínima no puede exceder 120'
+    }),
+
+  ageMax: Joi.number()
+    .integer()
+    .min(1)
+    .max(120)
+    .optional()
+    .messages({
+      'number.base': 'La edad máxima debe ser un número',
+      'number.integer': 'La edad máxima debe ser un número entero',
+      'number.min': 'La edad máxima debe ser al menos 1',
+      'number.max': 'La edad máxima no puede exceder 120'
+    }),
+  
+  sortBy: Joi.string()
+    .valid('name', 'email', 'age', 'createdAt', 'updatedAt')
+    .default('createdAt')
+    .optional()
+    .messages({
+      'any.only': 'El campo de ordenamiento debe ser: name, email, age, createdAt, updatedAt'
+    }),
+  
+  sortOrder: Joi.string()
+    .valid('ASC', 'DESC')
+    .default('DESC')
+    .optional()
+    .messages({
+      'any.only': 'El orden debe ser ASC o DESC'
+    })
+});
+
+// Schema específico para búsqueda avanzada
+export const searchQuerySchema = Joi.object({
+  page: Joi.number()
+    .integer()
+    .min(1)
+    .default(1)
+    .optional()
+    .messages({
+      'number.base': 'La página debe ser un número',
+      'number.integer': 'La página debe ser un número entero',
+      'number.min': 'La página debe ser al menos 1'
+    }),
+  
+  limit: Joi.number()
+    .integer()
+    .min(1)
+    .max(100)
+    .default(10)
+    .optional()
+    .messages({
+      'number.base': 'El límite debe ser un número',
+      'number.integer': 'El límite debe ser un número entero',
+      'number.min': 'El límite debe ser al menos 1',
+      'number.max': 'El límite no puede exceder 100'
+    }),
+  
+  search: Joi.string()
+    .max(255)
+    .trim()
+    .optional()
+    .messages({
+      'string.max': 'El término de búsqueda no puede exceder 255 caracteres'
+    }),
+
+  name: Joi.string()
+    .max(255)
+    .trim()
+    .optional()
+    .messages({
+      'string.max': 'El nombre no puede exceder 255 caracteres'
+    }),
+
+  email: Joi.string()
+    .email()
+    .max(255)
+    .trim()
+    .optional()
+    .messages({
+      'string.email': 'El email debe tener un formato válido',
+      'string.max': 'El email no puede exceder 255 caracteres'
+    }),
+
+  ageMin: Joi.number()
+    .integer()
+    .min(1)
+    .max(120)
+    .optional()
+    .messages({
+      'number.base': 'La edad mínima debe ser un número',
+      'number.integer': 'La edad mínima debe ser un número entero',
+      'number.min': 'La edad mínima debe ser al menos 1',
+      'number.max': 'La edad mínima no puede exceder 120'
+    }),
+
+  ageMax: Joi.number()
+    .integer()
+    .min(1)
+    .max(120)
+    .optional()
+    .messages({
+      'number.base': 'La edad máxima debe ser un número',
+      'number.integer': 'La edad máxima debe ser un número entero',
+      'number.min': 'La edad máxima debe ser al menos 1',
+      'number.max': 'La edad máxima no puede exceder 120'
+    }),
   
   sortBy: Joi.string()
     .valid('name', 'email', 'age', 'createdAt', 'updatedAt')

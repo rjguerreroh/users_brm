@@ -54,3 +54,37 @@ export const validateUserId = validate;
  * Middleware específico para validar query parameters
  */
 export const validateUserQuery = validate;
+
+/**
+ * Middleware específico para validar búsqueda (sin validar ID)
+ */
+export const validateSearchQuery = (schema: Joi.ObjectSchema) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const data = req.query;
+
+    // Validar solo los campos que están presentes
+    const { error, value } = schema.validate(data, {
+      abortEarly: false,
+      stripUnknown: true,
+      convert: true,
+      allowUnknown: true // Permitir campos desconocidos
+    });
+
+    if (error) {
+      res.status(400).json({
+        success: false,
+        error: 'Datos de validación inválidos',
+        details: error.details.map(detail => ({
+          field: detail.path.join('.'),
+          message: detail.message
+        }))
+      });
+      return;
+    }
+
+    // Reemplazar los datos originales con los datos validados y limpiados
+    req.query = value;
+
+    next();
+  };
+};
