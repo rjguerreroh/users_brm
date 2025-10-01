@@ -1,30 +1,28 @@
 import { Request, Response } from 'express';
-import { AppDataSource } from '../config/typeorm';
-import { User } from '../entities/User';
+import { UserService } from '../services/UserService';
 
-export const getAllUsers = async (_req: Request, res: Response): Promise<void> => {
-  try {
-    const userRepository = AppDataSource.getRepository(User);
-    const users = await userRepository.find({
-      order: { createdAt: 'DESC' }
-    });
+export class UserController {
+  constructor(private userService: UserService) {}
 
-    res.json({
-      success: true,
-      data: users,
-      count: users.length
-    });
-  } catch (error) {
-    console.error('Error al obtener usuarios:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Error al obtener usuarios'
-    });
-  }
-};
+  getAllUsers = async (_req: Request, res: Response): Promise<void> => {
+    const result = await this.userService.getAllUsers();
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        data: result.data,
+        count: result.data?.length || 0,
+        message: result.message
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  };
 
-export const getUserById = async (req: Request, res: Response): Promise<void> => {
-  try {
+  getUserById = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     
     if (!id) {
@@ -34,38 +32,37 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
       });
       return;
     }
-    
-    const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOne({
-      where: { id: parseInt(id) }
-    });
 
-    if (!user) {
-      res.status(404).json({
+    const userId = parseInt(id);
+    if (isNaN(userId)) {
+      res.status(400).json({
         success: false,
-        error: 'Usuario no encontrado'
+        error: 'ID de usuario inválido'
       });
       return;
     }
 
-    res.json({
-      success: true,
-      data: user
-    });
-  } catch (error) {
-    console.error('Error al obtener usuario:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Error al obtener usuario'
-    });
-  }
-};
+    const result = await this.userService.getUserById(userId);
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        data: result.data,
+        message: result.message
+      });
+    } else {
+      const statusCode = result.error === 'Usuario no encontrado' ? 404 : 500;
+      res.status(statusCode).json({
+        success: false,
+        error: result.error
+      });
+    }
+  };
 
-export const createUser = async (req: Request, res: Response): Promise<void> => {
-  try {
+  createUser = async (req: Request, res: Response): Promise<void> => {
     const { name, email, age } = req.body;
 
-    // Validación básica
+    // Validación básica de campos requeridos
     if (!name || !email || !age) {
       res.status(400).json({
         success: false,
@@ -74,46 +71,24 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    const userRepository = AppDataSource.getRepository(User);
-
-    // Verificar si el email ya existe
-    const existingUser = await userRepository.findOne({
-      where: { email }
-    });
-
-    if (existingUser) {
-      res.status(409).json({
-        success: false,
-        error: 'El email ya está registrado'
+    const result = await this.userService.createUser({ name, email, age });
+    
+    if (result.success) {
+      res.status(201).json({
+        success: true,
+        data: result.data,
+        message: result.message
       });
-      return;
+    } else {
+      const statusCode = result.error?.includes('email') ? 409 : 400;
+      res.status(statusCode).json({
+        success: false,
+        error: result.error
+      });
     }
+  };
 
-    // Crear nuevo usuario
-    const newUser = userRepository.create({
-      name,
-      email,
-      age: parseInt(age)
-    });
-
-    const savedUser = await userRepository.save(newUser);
-
-    res.status(201).json({
-      success: true,
-      data: savedUser,
-      message: 'Usuario creado exitosamente'
-    });
-  } catch (error) {
-    console.error('Error al crear usuario:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Error al crear usuario'
-    });
-  }
-};
-
-export const updateUser = async (req: Request, res: Response): Promise<void> => {
-  try {
+  updateUser = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const { name, email, age } = req.body;
 
@@ -125,59 +100,37 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    const userRepository = AppDataSource.getRepository(User);
-
-    // Verificar si el usuario existe
-    const existingUser = await userRepository.findOne({
-      where: { id: parseInt(id) }
-    });
-
-    if (!existingUser) {
-      res.status(404).json({
+    const userId = parseInt(id);
+    if (isNaN(userId)) {
+      res.status(400).json({
         success: false,
-        error: 'Usuario no encontrado'
+        error: 'ID de usuario inválido'
       });
       return;
     }
 
-    // Verificar si el email ya existe en otro usuario
-    if (email && email !== existingUser.email) {
-      const emailCheck = await userRepository.findOne({
-        where: { email }
+    const result = await this.userService.updateUser(userId, { name, email, age });
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        data: result.data,
+        message: result.message
       });
-
-      if (emailCheck) {
-        res.status(409).json({
-          success: false,
-          error: 'El email ya está registrado por otro usuario'
-        });
-        return;
-      }
+    } else {
+      let statusCode = 500;
+      if (result.error === 'Usuario no encontrado') statusCode = 404;
+      if (result.error?.includes('email')) statusCode = 409;
+      if (result.error?.includes('campos')) statusCode = 400;
+      
+      res.status(statusCode).json({
+        success: false,
+        error: result.error
+      });
     }
+  };
 
-    // Actualizar usuario
-    if (name) existingUser.name = name;
-    if (email) existingUser.email = email;
-    if (age) existingUser.age = parseInt(age);
-
-    const updatedUser = await userRepository.save(existingUser);
-
-    res.json({
-      success: true,
-      data: updatedUser,
-      message: 'Usuario actualizado exitosamente'
-    });
-  } catch (error) {
-    console.error('Error al actualizar usuario:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Error al actualizar usuario'
-    });
-  }
-};
-
-export const deleteUser = async (req: Request, res: Response): Promise<void> => {
-  try {
+  deleteUser = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     
     if (!id) {
@@ -187,35 +140,30 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
       });
       return;
     }
-    
-    const userRepository = AppDataSource.getRepository(User);
 
-    // Verificar si el usuario existe
-    const existingUser = await userRepository.findOne({
-      where: { id: parseInt(id) }
-    });
-
-    if (!existingUser) {
-      res.status(404).json({
+    const userId = parseInt(id);
+    if (isNaN(userId)) {
+      res.status(400).json({
         success: false,
-        error: 'Usuario no encontrado'
+        error: 'ID de usuario inválido'
       });
       return;
     }
 
-    // Eliminar usuario
-    await userRepository.remove(existingUser);
-
-    res.json({
-      success: true,
-      data: existingUser,
-      message: 'Usuario eliminado exitosamente'
-    });
-  } catch (error) {
-    console.error('Error al eliminar usuario:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Error al eliminar usuario'
-    });
-  }
-};
+    const result = await this.userService.deleteUser(userId);
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        data: result.data,
+        message: result.message
+      });
+    } else {
+      const statusCode = result.error === 'Usuario no encontrado' ? 404 : 500;
+      res.status(statusCode).json({
+        success: false,
+        error: result.error
+      });
+    }
+  };
+}
