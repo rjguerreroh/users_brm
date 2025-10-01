@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { User } from '../entities/User';
+import { User } from '../app/users/entities/User';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',

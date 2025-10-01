@@ -1,7 +1,7 @@
 import { AppDataSource } from './typeorm';
-import { User } from '../entities/User';
-import { UserService } from '../services/UserService';
-import { UserController } from '../controllers/userController';
+import { User } from '../app/users/entities/User';
+import { UserService } from '../app/users/services/UserService';
+import { UserController } from '../app/users/controllers/userController';
 
 /**
  * Contenedor de dependencias simple
