@@ -75,15 +75,6 @@ export class UserService {
    */
   async createUser(userData: CreateUserData): Promise<UserServiceResponse<User>> {
     try {
-      // Lógica de negocio: Validaciones
-      const validation = this.validateUserData(userData);
-      if (!validation.isValid) {
-        return {
-          success: false,
-          error: validation.error || 'Datos de usuario inválidos'
-        };
-      }
-
       // Lógica de negocio: Verificar email único
       const existingUser = await this.userRepository.findOne({
         where: { email: userData.email }
@@ -239,24 +230,6 @@ export class UserService {
     }
   }
 
-  /**
-   * Lógica de negocio: Validar datos del usuario
-   */
-  private validateUserData(userData: CreateUserData): { isValid: boolean; error?: string } {
-    if (!userData.name || userData.name.trim().length < 2) {
-      return { isValid: false, error: 'El nombre debe tener al menos 2 caracteres' };
-    }
-
-    if (!userData.email || !this.isValidEmail(userData.email)) {
-      return { isValid: false, error: 'Formato de email inválido' };
-    }
-
-    if (!userData.age || userData.age < 1 || userData.age > 120) {
-      return { isValid: false, error: 'La edad debe estar entre 1 y 120 años' };
-    }
-
-    return { isValid: true };
-  }
 
   /**
    * Lógica de negocio: Procesar datos del usuario
@@ -301,11 +274,4 @@ export class UserService {
 
 
 
-  /**
-   * Lógica de negocio: Validar formato de email
-   */
-  private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
 }

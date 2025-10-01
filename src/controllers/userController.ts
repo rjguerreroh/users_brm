@@ -24,23 +24,7 @@ export class UserController {
 
   getUserById = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    
-    if (!id) {
-      res.status(400).json({
-        success: false,
-        error: 'ID de usuario requerido'
-      });
-      return;
-    }
-
-    const userId = parseInt(id);
-    if (isNaN(userId)) {
-      res.status(400).json({
-        success: false,
-        error: 'ID de usuario inválido'
-      });
-      return;
-    }
+    const userId = parseInt(id!);
 
     const result = await this.userService.getUserById(userId);
     
@@ -62,15 +46,6 @@ export class UserController {
   createUser = async (req: Request, res: Response): Promise<void> => {
     const { name, email, age } = req.body;
 
-    // Validación básica de campos requeridos
-    if (!name || !email || !age) {
-      res.status(400).json({
-        success: false,
-        error: 'Faltan campos requeridos: name, email, age'
-      });
-      return;
-    }
-
     const result = await this.userService.createUser({ name, email, age });
     
     if (result.success) {
@@ -91,23 +66,7 @@ export class UserController {
   updateUser = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const { name, email, age } = req.body;
-
-    if (!id) {
-      res.status(400).json({
-        success: false,
-        error: 'ID de usuario requerido'
-      });
-      return;
-    }
-
-    const userId = parseInt(id);
-    if (isNaN(userId)) {
-      res.status(400).json({
-        success: false,
-        error: 'ID de usuario inválido'
-      });
-      return;
-    }
+    const userId = parseInt(id!);
 
     const result = await this.userService.updateUser(userId, { name, email, age });
     
@@ -132,23 +91,7 @@ export class UserController {
 
   deleteUser = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    
-    if (!id) {
-      res.status(400).json({
-        success: false,
-        error: 'ID de usuario requerido'
-      });
-      return;
-    }
-
-    const userId = parseInt(id);
-    if (isNaN(userId)) {
-      res.status(400).json({
-        success: false,
-        error: 'ID de usuario inválido'
-      });
-      return;
-    }
+    const userId = parseInt(id!);
 
     const result = await this.userService.deleteUser(userId);
     
