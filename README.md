@@ -22,21 +22,28 @@ API REST para gestión de usuarios desarrollada con Node.js, TypeScript y Postgr
 ```bash
 # 1. Clonar e instalar
 git clone <repository-url>
-cd users
+cd users_brm
 npm install
 
-# 2. Configurar base de datos
+# 2. Configurar variables de entorno
+cp .env-example .env
+
+# 3. Levantar base de datos
 docker-compose up -d
+
+# 4. Ejecutar migraciones
 npm run migration:run
+
+# 5. Poblar con datos de prueba
 npm run seed:run
 
-# 3. Iniciar aplicación
+# 6. Iniciar aplicación
 npm run dev
 
-# 4. Probar endpoints
+# 7. Probar endpoints
 curl http://localhost:3000/api/users
 
-# 5. Acceder a la documentación Swagger
+# 8. Acceder a la documentación Swagger
 # Abrir en el navegador: http://localhost:3000/api-docs
 ```
 
@@ -61,18 +68,18 @@ curl http://localhost:3000/api/users
 
 3. **Configurar variables de entorno**
    ```bash
-   cp .env.example .env
+   cp .env-example .env
    ```
    
-   Editar el archivo `.env` con tus configuraciones:
+   El archivo `.env` ya está configurado con los valores correctos para Docker:
    ```env
    NODE_ENV=development
    PORT=3000
    DB_HOST=localhost
-   DB_PORT=5432
-   DB_USERNAME=postgres
+   DB_PORT=5433  # Puerto correcto para Docker
+   DB_USER=postgres
    DB_PASSWORD=password
-   DB_DATABASE=users_db
+   DB_NAME=users_db
    ```
 
 4. **Configurar base de datos**

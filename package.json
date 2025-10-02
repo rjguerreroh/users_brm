@@ -16,7 +16,10 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm -- migration:generate -d src/config/typeorm.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/config/typeorm.ts",
-    "migration:revert": "npm run typeorm -- migration:revert -d src/config/typeorm.ts"
+    "migration:revert": "npm run typeorm -- migration:revert -d src/config/typeorm.ts",
+    "seed:run": "ts-node --require reflect-metadata src/seeders/users.seeders.ts run",
+    "seed:reset": "ts-node --require reflect-metadata src/seeders/users.seeders.ts reset",
+    "seed:clear": "ts-node --require reflect-metadata src/seeders/users.seeders.ts clear"
   },
   "keywords": [
     "nodejs",
