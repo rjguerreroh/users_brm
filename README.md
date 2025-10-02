@@ -2,7 +2,7 @@
 
 API REST para gestión de usuarios desarrollada con Node.js, TypeScript y PostgreSQL.
 
-## 🚀 Características
+## Características
 
 - **Framework**: Express.js con TypeScript
 - **Base de datos**: PostgreSQL con TypeORM
@@ -15,8 +15,9 @@ API REST para gestión de usuarios desarrollada con Node.js, TypeScript y Postgr
 - **Testing**: Suite completa de tests unitarios (109 tests)
 - **Paginación**: Sistema de paginación avanzado
 - **Búsqueda**: Endpoint de búsqueda avanzada con filtros
+- **Documentación**: Swagger UI integrado para documentación interactiva
 
-## ⚡ Quick Start
+## Inicio de la app
 
 ```bash
 # 1. Clonar e instalar
@@ -34,9 +35,12 @@ npm run dev
 
 # 4. Probar endpoints
 curl http://localhost:3000/api/users
+
+# 5. Acceder a la documentación Swagger
+# Abrir en el navegador: http://localhost:3000/api-docs
 ```
 
-## 📋 Requisitos
+## Requisitos
 
 - Node.js (v18 o superior)
 - PostgreSQL
@@ -90,7 +94,7 @@ curl http://localhost:3000/api/users
    - Ejecutar migraciones: `npm run migration:run`
    - Poblar con datos: `npm run seed:run`
 
-## 🚀 Uso
+## Uso
 
 ### Desarrollo
 ```bash
@@ -101,6 +105,16 @@ npm run dev
 ```bash
 npm run build
 npm start
+```
+
+### Documentación interactiva
+```bash
+# Iniciar la aplicación
+npm run dev
+
+# Acceder a Swagger UI
+# Abrir: http://localhost:3000/api-docs
+# Probar endpoints directamente desde el navegador
 ```
 
 ### Scripts disponibles
@@ -119,8 +133,6 @@ npm run seed:reset   # Limpiar y volver a ejecutar seeders
 npm run seed:clear   # Limpiar todos los datos
 ```
 
-Los seeders crean 20 usuarios de prueba con datos realistas para testing y desarrollo.
-
 ### Docker
 ```bash
 npm run docker:up      # Levantar servicios
@@ -130,11 +142,15 @@ npm run docker:restart # Reiniciar servicios
 npm run docker:clean   # Limpiar volúmenes
 ```
 
-## 📚 API Endpoints
+## API Endpoints
 
 ### Información general
 - `GET /` - Información de la API
 - `GET /health` - Health check
+
+### Documentación
+- `GET /api-docs` - Documentación Swagger UI interactiva
+- `GET /api-docs.json` - Especificación OpenAPI JSON
 
 ### Usuarios
 - `GET /api/users` - Listar todos los usuarios (con paginación)
@@ -144,121 +160,6 @@ npm run docker:clean   # Limpiar volúmenes
 - `PUT /api/users/:id` - Actualizar usuario
 - `DELETE /api/users/:id` - Eliminar usuario
 
-## 📝 Ejemplos de uso
-
-### Crear usuario
-```bash
-curl -X POST http://localhost:3000/api/users \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Juan Pérez",
-    "email": "juan@example.com",
-    "age": 30
-  }'
-```
-
-### Obtener todos los usuarios
-```bash
-curl http://localhost:3000/api/users
-```
-
-### Paginación de usuarios
-```bash
-# Página específica
-curl "http://localhost:3000/api/users?page=2"
-
-# Límite de elementos por página
-curl "http://localhost:3000/api/users?limit=5"
-
-# Combinación de paginación
-curl "http://localhost:3000/api/users?page=2&limit=5"
-```
-
-#### Parámetros de paginación:
-- `page` - Número de página (por defecto: 1)
-- `limit` - Elementos por página (por defecto: 10, máximo: 100)
-
-### Obtener usuario por ID
-```bash
-curl http://localhost:3000/api/users/1
-```
-
-### Actualizar usuario
-```bash
-curl -X PUT http://localhost:3000/api/users/1 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Juan Carlos Pérez",
-    "email": "juancarlos@example.com",
-    "age": 31
-  }'
-```
-
-### Eliminar usuario
-```bash
-curl -X DELETE http://localhost:3000/api/users/1
-```
-
-### Búsqueda avanzada de usuarios
-```bash
-# Búsqueda básica
-curl "http://localhost:3000/api/users/search?search=Juan"
-
-# Búsqueda por rango de edad
-curl "http://localhost:3000/api/users/search?ageMin=25&ageMax=30"
-
-# Búsqueda con ordenamiento
-curl "http://localhost:3000/api/users/search?sortBy=name&sortOrder=ASC"
-
-# Búsqueda con paginación
-curl "http://localhost:3000/api/users/search?page=2&limit=5"
-
-# Búsqueda combinada
-curl "http://localhost:3000/api/users/search?search=Juan&ageMin=25&sortBy=name&sortOrder=ASC&page=1&limit=10"
-```
-
-#### Parámetros de búsqueda disponibles:
-- `search` - Búsqueda general en nombre y email
-- `name` - Filtrar por nombre específico
-- `email` - Filtrar por email específico
-- `ageMin` - Edad mínima
-- `ageMax` - Edad máxima
-- `sortBy` - Campo de ordenamiento (name, email, age, createdAt, updatedAt)
-- `sortOrder` - Orden (ASC, DESC)
-- `page` - Número de página (por defecto: 1)
-- `limit` - Elementos por página (por defecto: 10, máximo: 100)
-
-## 📋 Estructura de respuesta
-
-### Respuesta de paginación
-```json
-{
-  "success": true,
-  "data": {
-    "data": [
-      {
-        "id": 1,
-        "name": "Juan Pérez",
-        "email": "juan@example.com",
-        "age": 30,
-        "createdAt": "2025-10-01T05:49:33.099Z",
-        "updatedAt": "2025-10-01T05:49:33.099Z"
-      }
-    ],
-    "pagination": {
-      "page": 1,
-      "limit": 10,
-      "total": 25,
-      "totalPages": 3,
-      "hasNext": true,
-      "hasPrev": false
-    }
-  },
-  "message": "Se encontraron 25 usuarios (página 1 de 3)"
-}
-```
-
-### Respuesta de búsqueda avanzada
 ```json
 {
   "success": true,
@@ -283,35 +184,76 @@ curl "http://localhost:3000/api/users/search?search=Juan&ageMin=25&sortBy=name&s
 }
 ```
 
-## 🏗️ Estructura del proyecto
+## Estructura del proyecto
 
 ```
 src/
-├── config/          # Configuración de base de datos y contenedor DI
-├── controllers/     # Controladores de la API
-├── entities/        # Entidades de TypeORM
-├── interfaces/      # Interfaces y tipos TypeScript
-├── middleware/      # Middleware de validación
-├── models/          # Modelos de datos
-├── routes/          # Definición de rutas
-├── schemas/         # Esquemas de validación con Joi
-├── services/        # Lógica de negocio
+├── app/             # Aplicación principal
+│   ├── __tests__/   # Tests unitarios
+│   ├── users/       # Módulo de usuarios
+│   │   ├── controllers/  # Controladores
+│   │   ├── entities/     # Entidades TypeORM
+│   │   ├── interfaces/   # Interfaces TypeScript
+│   │   ├── middleware/   # Middleware de validación
+│   │   ├── models/       # Modelos de datos
+│   │   ├── routes/       # Definición de rutas
+│   │   ├── schemas/      # Esquemas de validación Joi
+│   │   └── services/     # Lógica de negocio
+│   ├── seeders/     # Sistema de datos de prueba
+│   ├── app.ts       # Configuración de Express
+│   ├── router.ts    # Router principal
+│   └── server.ts    # Punto de entrada
+├── config/          # Configuración de base de datos y DI
+├── swagger/         # Documentación Swagger
+│   ├── swagger.ts   # Configuración principal
+│   └── userRoutes.swagger.ts  # Anotaciones de usuarios
 └── index.ts         # Punto de entrada de la aplicación
 ```
 
+## 📚 Documentación Swagger
+
+La API incluye documentación interactiva completa con Swagger UI:
+
+### Acceso a la documentación
+- **Swagger UI**: `http://localhost:3000/api-docs` - Interfaz interactiva
+- **OpenAPI JSON**: `http://localhost:3000/api-docs.json` - Especificación completa
+
+### Características de la documentación
+- **Interfaz interactiva**: Prueba los endpoints directamente desde el navegador
+- **Esquemas simplificados**: Documentación clara sin complejidad innecesaria
+- **Parámetros reutilizables**: Definiciones centralizadas para paginación, búsqueda y filtros
+- **Ejemplos de uso**: Request/response examples para cada endpoint
+- **Códigos de estado**: Documentación completa de respuestas y errores
+- **Validación visual**: Esquemas de validación para request bodies
+
+### Estructura de documentación
+```
+src/swagger/
+├── swagger.ts                    # Configuración principal de Swagger
+└── userRoutes.swagger.ts        # Anotaciones para endpoints de usuarios
+```
+
+### Endpoints documentados
+- **General**: `/`, `/health` - Información y estado de la API
+- **Usuarios**: CRUD completo con paginación y búsqueda avanzada
+- **Parámetros**: Paginación, filtros, ordenamiento y búsqueda
+- **Respuestas**: Esquemas de éxito y error para todos los endpoints
+
 ## 🔧 Tecnologías utilizadas
 
-- **Node.js** - Runtime de JavaScript
-- **TypeScript** - Superset tipado de JavaScript
-- **Express.js** - Framework web para Node.js
-- **TypeORM** - ORM para TypeScript y JavaScript
-- **PostgreSQL** - Base de datos relacional
-- **Joi** - Validación de esquemas
-- **Docker** - Containerización
-- **Helmet** - Seguridad HTTP
-- **CORS** - Cross-Origin Resource Sharing
+- Node.js
+- TypeScript
+- Express.js
+- TypeORM
+- PostgreSQL
+- Joi
+- Docker
+- Helmet
+- CORS
+- Swagger UI
+- Swagger JSDoc
 
-## 📊 Modelo de datos
+## Modelo de datos
 
 ### Usuario
 ```typescript
@@ -325,7 +267,7 @@ src/
 }
 ```
 
-## 🧪 Testing
+## Testing
 
 Suite completa de testing con **109 tests** que cubren toda la funcionalidad:
 
@@ -364,7 +306,7 @@ src/app/__tests__/
     └── SeederRunner.simple.test.ts
 ```
 
-## 📦 Migraciones
+## Migraciones
 
 ```bash
 # Generar migración
@@ -377,9 +319,8 @@ npm run migration:run
 npm run migration:revert
 ```
 
-## 🌱 Seeders
+## Seeders
 
-Los seeders permiten poblar la base de datos con datos de prueba para desarrollo y testing. Incluyen validación inteligente para evitar duplicados y manejo de errores robusto.
 
 ### Comandos disponibles
 
@@ -441,56 +382,40 @@ src/app/seeders/
     └── SeederRunner.simple.test.ts
 ```
 
-### Salida de ejemplo
+## Funciones y caracteristicas
 
-```bash
-🌱 Iniciando seeders...
-==================================================
-✅ Conexión a la base de datos establecida
-🌱 Iniciando seeder de usuarios...
-✅ Seeder completado: 20 usuarios creados
-📊 Usuarios creados:
-   1. Juan Pérez (juan.perez@example.com) - 30 años
-   2. María García (maria.garcia@example.com) - 25 años
-   ...
-==================================================
-🎉 Todos los seeders completados exitosamente
-```
-
-## ✨ Features Detalladas
-
-### 🔍 Búsqueda Avanzada
+### Búsqueda
 - **Filtros múltiples**: Por nombre, email, edad, fechas
 - **Búsqueda de texto**: ILIKE para búsquedas flexibles
 - **Ordenamiento**: Por cualquier campo (ASC/DESC)
 - **Paginación**: Control total sobre resultados
 - **Validación**: Parámetros validados con Joi
 
-### 📊 Paginación Inteligente
+### Paginación
 - **Metadatos completos**: Total, páginas, navegación
 - **Límites configurables**: 1-100 elementos por página
 - **Navegación**: hasNext, hasPrev para UI
 - **Performance**: Consultas optimizadas con LIMIT/OFFSET
 
-### 🧪 Testing Robusto
+### Testing
 - **109 tests** cubriendo toda la funcionalidad
 - **Mocks inteligentes**: TypeORM, Express, DIContainer
 - **Cobertura completa**: Services, Controllers, Routes, Seeders
 - **Tests de integración**: Endpoints reales con supertest
 
-### 🌱 Seeders Inteligentes
+### Seeders
 - **Detección automática**: No duplica datos existentes
 - **Datos realistas**: 20 usuarios con nombres españoles
 - **Manejo de errores**: Logs detallados y rollback
 - **Transacciones**: Operaciones atómicas garantizadas
 
-### 🏗️ Arquitectura Limpia
+### Arquitectura
 - **Inyección de dependencias**: DIContainer para gestión
 - **Separación de responsabilidades**: Services, Controllers, Routes
 - **Validación centralizada**: Joi schemas reutilizables
 - **Manejo de errores**: Respuestas consistentes y informativas
 
-## 🚀 Despliegue
+## Despliegue
 
 ### Docker
 ```bash
@@ -511,23 +436,3 @@ DB_USERNAME=your-username
 DB_PASSWORD=your-password
 DB_DATABASE=your-database
 ```
-
-## 🤝 Contribución
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
-
-## 👨‍💻 Autor
-
-- **Tu Nombre** - *Desarrollo inicial* - [GitHub](https://github.com/tu-usuario)
-
-## 📞 Soporte
-
-Si tienes alguna pregunta o problema, por favor abre un issue en el repositorio.

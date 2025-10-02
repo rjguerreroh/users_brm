@@ -1,8 +1,8 @@
-import { UserRoutes } from '../../users/routes/userRoutes';
-import { DIContainer } from '../../../config/container';
+import { UserRoutes } from '../../app/users/routes/userRoutes';
+import { DIContainer } from '../../config/container';
 
 // Mock del DIContainer
-jest.mock('../../../config/container', () => ({
+jest.mock('../../config/container', () => ({
   DIContainer: {
     getUserController: jest.fn(),
   },

@@ -1,6 +1,6 @@
-import { UserService } from '../../users/services/UserService';
-import { UserController } from '../../users/controllers/userController';
-import { SearchParams, SearchResponse } from '../../users/interfaces/User';
+import { UserService } from '../../app/users/services/UserService';
+import { UserController } from '../../app/users/controllers/userController';
+import { SearchParams, SearchResponse } from '../../app/users/interfaces/User';
 
 // Mock del repositorio de TypeORM
 const mockRepository = {

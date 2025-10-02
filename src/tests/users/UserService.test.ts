@@ -1,4 +1,4 @@
-import { UserService } from '../../users/services/UserService';
+import { UserService } from '../../app/users/services/UserService';
 
 // Mock simple del repositorio
 const mockRepository = {

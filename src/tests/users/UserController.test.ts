@@ -1,4 +1,4 @@
-import { UserController } from '../../users/controllers/userController';
+import { UserController } from '../../app/users/controllers/userController';
 import { Request, Response } from 'express';
 
 // Mock del UserService

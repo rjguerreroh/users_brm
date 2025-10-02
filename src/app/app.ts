@@ -5,6 +5,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { Routes } from './router';
 import { initializeDatabase } from '../config/typeorm';
+import { setupSwagger } from '../swagger/swagger.docs';
 
 class App {
   private app: express.Application;
@@ -29,6 +30,32 @@ class App {
       this.app.use(express.urlencoded({ extended: true }));
 
       // Rutas básicas
+      /**
+       * @swagger
+       * /:
+       *   get:
+       *     summary: Información de la API
+       *     description: Obtiene información básica sobre la API
+       *     tags: [General]
+       *     responses:
+       *       200:
+       *         description: Información de la API
+       *         content:
+       *           application/json:
+       *             schema:
+       *               type: object
+       *               properties:
+       *                 message:
+       *                   type: string
+       *                   example: "API de Usuarios funcionando correctamente"
+       *                 version:
+       *                   type: string
+       *                   example: "1.0.0"
+       *                 timestamp:
+       *                   type: string
+       *                   format: date-time
+       *                   example: "2024-01-15T10:30:00.000Z"
+       */
       this.app.get('/', (req, res) => {
         console.log(req.originalUrl);
         res.json({
@@ -38,6 +65,32 @@ class App {
         });
       });
 
+      /**
+       * @swagger
+       * /health:
+       *   get:
+       *     summary: Health Check
+       *     description: Verifica el estado de la API
+       *     tags: [General]
+       *     responses:
+       *       200:
+       *         description: API funcionando correctamente
+       *         content:
+       *           application/json:
+       *             schema:
+       *               type: object
+       *               properties:
+       *                 status:
+       *                   type: string
+       *                   example: "OK"
+       *                 uptime:
+       *                   type: number
+       *                   example: 123.456
+       *                 timestamp:
+       *                   type: string
+       *                   format: date-time
+       *                   example: "2024-01-15T10:30:00.000Z"
+       */
       this.app.get('/health', (req, res) => {
         console.log(req.originalUrl);
         res.json({
@@ -46,6 +99,9 @@ class App {
           timestamp: new Date().toISOString()
         });
       });
+
+      // Configurar Swagger
+      setupSwagger(this.app);
 
       // Inicializar rutas
       const routes = new Routes(this.app);
@@ -81,6 +137,9 @@ class App {
         console.log('\n ENDPOINTS GENERALES:');
         console.log(`  GET  http://localhost:${this.port}/           - Información de la API`);
         console.log(`  GET  http://localhost:${this.port}/health      - Health check`);
+        console.log('\n DOCUMENTACIÓN:');
+        console.log(`  GET    http://localhost:${this.port}/api-docs         - Documentación Swagger UI`);
+        console.log(`  GET    http://localhost:${this.port}/api-docs.json    - Especificación OpenAPI JSON`);
         console.log('\n ENDPOINTS DE USUARIOS:');
         console.log(`  GET    http://localhost:${this.port}/api/users        - Listar usuarios (con paginación: ?page=1&limit=10)`);
         console.log(`  GET    http://localhost:${this.port}/api/users/search - Búsqueda avanzada (filtros, ordenamiento, paginación)`);
