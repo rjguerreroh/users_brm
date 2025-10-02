@@ -1,6 +1,6 @@
 import { UserService } from '../../app/users/services/UserService';
 
-// Mock simple del repositorio
+// Mock del repositorio
 const mockRepository = {
   find: jest.fn(),
   findOne: jest.fn(),
@@ -8,9 +8,16 @@ const mockRepository = {
   create: jest.fn(),
   save: jest.fn(),
   remove: jest.fn(),
+  createQueryBuilder: jest.fn(() => ({
+    andWhere: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+    getManyAndCount: jest.fn()
+  }))
 };
 
-describe('UserService - Simple Tests', () => {
+describe('UserService - Tests', () => {
   let userService: UserService;
 
   beforeEach(() => {
@@ -277,6 +284,66 @@ describe('UserService - Simple Tests', () => {
 
       expect(result.success).toBe(false);
       expect(result.error).toBe('ID de usuario inválido');
+    });
+  });
+
+  describe('searchUsers', () => {
+    it('should validate pagination parameters', async () => {
+      const searchParams = {
+        page: 0,
+        limit: 10
+      };
+
+      const result = await userService.searchUsers(searchParams);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('La página debe ser mayor a 0');
+    });
+
+    it('should validate limit parameters', async () => {
+      const searchParams = {
+        page: 1,
+        limit: 150
+      };
+
+      const result = await userService.searchUsers(searchParams);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('El límite debe estar entre 1 y 100');
+    });
+
+    it('should perform search with valid parameters', async () => {
+      const mockUsers = [
+        {
+          id: 1,
+          name: 'Juan Pérez',
+          email: 'juan@example.com',
+          age: 30,
+          createdAt: new Date('2025-10-01T05:49:33.099Z'),
+          updatedAt: new Date('2025-10-01T05:49:33.099Z')
+        }
+      ];
+
+      const mockQueryBuilder = {
+        andWhere: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([mockUsers, 1])
+      };
+
+      (mockRepository.createQueryBuilder as jest.Mock).mockReturnValue(mockQueryBuilder);
+
+      const searchParams = {
+        search: 'Juan',
+        page: 1,
+        limit: 10
+      };
+
+      const result = await userService.searchUsers(searchParams);
+
+      expect(result.success).toBe(true);
+      expect(result.data?.data).toEqual(mockUsers);
     });
   });
 });

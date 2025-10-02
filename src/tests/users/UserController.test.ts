@@ -8,9 +8,10 @@ const mockUserService = {
   createUser: jest.fn(),
   updateUser: jest.fn(),
   deleteUser: jest.fn(),
+  searchUsers: jest.fn(),
 };
 
-describe('UserController - Simple Tests', () => {
+describe('UserController - Tests', () => {
   let userController: UserController;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
@@ -350,6 +351,144 @@ describe('UserController - Simple Tests', () => {
       expect(mockJson).toHaveBeenCalledWith({
         success: false,
         error: 'Usuario no encontrado',
+      });
+    });
+  });
+
+  describe('searchUsers', () => {
+    it('should handle search request successfully', async () => {
+      const mockRequest = {
+        query: {
+          search: 'Juan',
+          page: '1',
+          limit: '10'
+        }
+      } as any;
+
+      const mockSearchResponse = {
+        data: [{
+          id: 1,
+          name: 'Juan Pérez',
+          email: 'juan@example.com',
+          age: 30,
+          createdAt: new Date('2025-10-01T05:49:33.099Z'),
+          updatedAt: new Date('2025-10-01T05:49:33.099Z')
+        }],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 1,
+          totalPages: 1,
+          hasNext: false,
+          hasPrev: false
+        },
+        filters: {
+          search: 'Juan',
+          sortBy: 'createdAt',
+          sortOrder: 'DESC'
+        }
+      };
+
+      mockUserService.searchUsers.mockResolvedValue({
+        success: true,
+        data: mockSearchResponse,
+        message: 'Se encontraron 1 usuarios con los filtros aplicados'
+      });
+
+      await userController.searchUsers(mockRequest, mockResponse as Response);
+
+      expect(mockUserService.searchUsers).toHaveBeenCalledWith({
+        search: 'Juan',
+        name: undefined,
+        email: undefined,
+        ageMin: undefined,
+        ageMax: undefined,
+        sortBy: undefined,
+        sortOrder: undefined,
+        page: 1,
+        limit: 10
+      });
+
+      expect(mockJson).toHaveBeenCalledWith({
+        success: true,
+        data: mockSearchResponse,
+        message: 'Se encontraron 1 usuarios con los filtros aplicados'
+      });
+    });
+
+    it('should handle search request with all parameters', async () => {
+      const mockRequest = {
+        query: {
+          search: 'test',
+          name: 'Juan',
+          email: 'juan@example.com',
+          ageMin: '25',
+          ageMax: '30',
+          sortBy: 'name',
+          sortOrder: 'ASC',
+          page: '2',
+          limit: '5'
+        }
+      } as any;
+
+      mockUserService.searchUsers.mockResolvedValue({
+        success: true,
+        data: {} as any,
+        message: 'Búsqueda exitosa'
+      });
+
+      await userController.searchUsers(mockRequest, mockResponse as Response);
+
+      expect(mockUserService.searchUsers).toHaveBeenCalledWith({
+        search: 'test',
+        name: 'Juan',
+        email: 'juan@example.com',
+        ageMin: 25,
+        ageMax: 30,
+        sortBy: 'name',
+        sortOrder: 'ASC',
+        page: 2,
+        limit: 5
+      });
+    });
+
+    it('should handle search errors', async () => {
+      const mockRequest = {
+        query: {}
+      } as any;
+
+      mockUserService.searchUsers.mockResolvedValue({
+        success: false,
+        error: 'Error de validación'
+      });
+
+      await userController.searchUsers(mockRequest, mockResponse as Response);
+
+      expect(mockStatus).toHaveBeenCalledWith(500);
+      expect(mockJson).toHaveBeenCalledWith({
+        success: false,
+        error: 'Error de validación'
+      });
+    });
+
+    it('should handle pagination validation errors', async () => {
+      const mockRequest = {
+        query: {
+          page: '0'
+        }
+      } as any;
+
+      mockUserService.searchUsers.mockResolvedValue({
+        success: false,
+        error: 'La página debe ser mayor a 0'
+      });
+
+      await userController.searchUsers(mockRequest, mockResponse as Response);
+
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        success: false,
+        error: 'La página debe ser mayor a 0'
       });
     });
   });

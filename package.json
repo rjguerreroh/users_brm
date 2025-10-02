@@ -16,16 +16,7 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm -- migration:generate -d src/config/typeorm.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/config/typeorm.ts",
-    "migration:revert": "npm run typeorm -- migration:revert -d src/config/typeorm.ts",
-    "seed": "ts-node --require reflect-metadata src/seeders/users.seeders.ts",
-    "seed:run": "npm run seed run",
-    "seed:reset": "npm run seed reset",
-    "seed:clear": "npm run seed clear",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f",
-    "docker:restart": "docker-compose restart",
-    "docker:clean": "docker-compose down -v --remove-orphans"
+    "migration:revert": "npm run typeorm -- migration:revert -d src/config/typeorm.ts"
   },
   "keywords": [
     "nodejs",

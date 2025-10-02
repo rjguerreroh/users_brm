@@ -130,16 +130,12 @@ class App {
         console.log(`Servidor ejecutándose en http://localhost:${this.port}`);
         console.log(`Health check disponible en http://localhost:${this.port}/health`);
         console.log(`Entorno: ${this.nodeEnv}`);
-        console.log(`🗄️ Base de datos: PostgreSQL con TypeORM conectada`);
+        console.log(`Base de datos: PostgreSQL con TypeORM conectada`);
         console.log('\n');
         console.log('ENDPOINTS');
         console.log('='.repeat(80));
-        console.log('\n ENDPOINTS GENERALES:');
-        console.log(`  GET  http://localhost:${this.port}/           - Información de la API`);
-        console.log(`  GET  http://localhost:${this.port}/health      - Health check`);
         console.log('\n DOCUMENTACIÓN:');
         console.log(`  GET    http://localhost:${this.port}/api-docs         - Documentación Swagger UI`);
-        console.log(`  GET    http://localhost:${this.port}/api-docs.json    - Especificación OpenAPI JSON`);
         console.log('\n ENDPOINTS DE USUARIOS:');
         console.log(`  GET    http://localhost:${this.port}/api/users        - Listar usuarios (con paginación: ?page=1&limit=10)`);
         console.log(`  GET    http://localhost:${this.port}/api/users/search - Búsqueda avanzada (filtros, ordenamiento, paginación)`);
@@ -147,12 +143,6 @@ class App {
         console.log(`  POST   http://localhost:${this.port}/api/users       - Crear nuevo usuario`);
         console.log(`  PUT    http://localhost:${this.port}/api/users/:id   - Actualizar usuario`);
         console.log(`  DELETE http://localhost:${this.port}/api/users/:id   - Eliminar usuario`);
-        
-        console.log('\n EJEMPLOS DE USO:');
-        console.log(`  Paginación:     curl "http://localhost:${this.port}/api/users?page=2&limit=5"`);
-        console.log(`  Búsqueda:       curl "http://localhost:${this.port}/api/users/search?search=Juan"`);
-        console.log(`  Filtros:         curl "http://localhost:${this.port}/api/users/search?ageMin=25&ageMax=30"`);
-        console.log(`  Ordenamiento:    curl "http://localhost:${this.port}/api/users/search?sortBy=name&sortOrder=ASC"`);
       });
 
     } catch (error) {

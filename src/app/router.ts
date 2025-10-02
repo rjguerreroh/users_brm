@@ -18,8 +18,7 @@ class Routes {
 
   public init() {
     try{
-      // @init_routes
-      console.log('🚀 Initializing routes...');
+      console.log('routes...');
       this.app.use(`${this.prefix}/users`, this.userRoutes.getRouter())
 
     } catch (error) {

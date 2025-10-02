@@ -46,7 +46,7 @@ curl http://localhost:3000/api/users
 - PostgreSQL
 - Docker y Docker Compose (opcional)
 
-## 🛠️ Instalación
+## Instalación
 
 1. **Clonar el repositorio**
    ```bash
@@ -160,36 +160,12 @@ npm run docker:clean   # Limpiar volúmenes
 - `PUT /api/users/:id` - Actualizar usuario
 - `DELETE /api/users/:id` - Eliminar usuario
 
-```json
-{
-  "success": true,
-  "data": {
-    "data": [...],
-    "pagination": {
-      "page": 1,
-      "limit": 10,
-      "total": 5,
-      "totalPages": 1,
-      "hasNext": false,
-      "hasPrev": false
-    },
-    "filters": {
-      "search": "Juan",
-      "ageMin": 25,
-      "sortBy": "name",
-      "sortOrder": "ASC"
-    }
-  },
-  "message": "Se encontraron 5 usuarios con los filtros aplicados (página 1 de 1)"
-}
-```
 
 ## Estructura del proyecto
 
 ```
 src/
 ├── app/             # Aplicación principal
-│   ├── __tests__/   # Tests unitarios
 │   ├── users/       # Módulo de usuarios
 │   │   ├── controllers/  # Controladores
 │   │   ├── entities/     # Entidades TypeORM
@@ -199,38 +175,38 @@ src/
 │   │   ├── routes/       # Definición de rutas
 │   │   ├── schemas/      # Esquemas de validación Joi
 │   │   └── services/     # Lógica de negocio
-│   ├── seeders/     # Sistema de datos de prueba
 │   ├── app.ts       # Configuración de Express
 │   ├── router.ts    # Router principal
 │   └── server.ts    # Punto de entrada
-├── config/          # Configuración de base de datos y DI
+├── config/          # Configuración de base de datos
+│   ├── container.ts     # Contenedor DI
+│   ├── database.ts     # Configuración de base de datos
+│   └── typeorm.ts      # Configuración TypeORM
+├── tests/           # Tests unitarios
+│   ├── users/       # Tests de usuarios
+│   │   ├── UserService.test.ts
+│   │   ├── UserController.test.ts
+│   │   └── UserRoutes.test.ts
+│   └── index.test.ts # Suite principal de tests
+├── seeders/         # Sistema de datos de prueba
+│   └── users.seeders.ts  # Seeder consolidado
 ├── swagger/         # Documentación Swagger
-│   ├── swagger.ts   # Configuración principal
-│   └── userRoutes.swagger.ts  # Anotaciones de usuarios
+│   └── swagger.docs.ts   # Configuración y anotaciones consolidadas
 └── index.ts         # Punto de entrada de la aplicación
 ```
 
-## 📚 Documentación Swagger
+## Documentación Swagger
 
 La API incluye documentación interactiva completa con Swagger UI:
 
 ### Acceso a la documentación
 - **Swagger UI**: `http://localhost:3000/api-docs` - Interfaz interactiva
-- **OpenAPI JSON**: `http://localhost:3000/api-docs.json` - Especificación completa
-
-### Características de la documentación
-- **Interfaz interactiva**: Prueba los endpoints directamente desde el navegador
-- **Esquemas simplificados**: Documentación clara sin complejidad innecesaria
-- **Parámetros reutilizables**: Definiciones centralizadas para paginación, búsqueda y filtros
-- **Ejemplos de uso**: Request/response examples para cada endpoint
-- **Códigos de estado**: Documentación completa de respuestas y errores
-- **Validación visual**: Esquemas de validación para request bodies
+- **OpenAPI JSON**: `http://localhost:3000/api-docs.json` - 
 
 ### Estructura de documentación
 ```
 src/swagger/
-├── swagger.ts                    # Configuración principal de Swagger
-└── userRoutes.swagger.ts        # Anotaciones para endpoints de usuarios
+└── swagger.docs.ts              # Configuración y anotaciones consolidadas
 ```
 
 ### Endpoints documentados
@@ -253,23 +229,9 @@ src/swagger/
 - Swagger UI
 - Swagger JSDoc
 
-## Modelo de datos
-
-### Usuario
-```typescript
-{
-  id: number (auto-increment)
-  name: string (máximo 255 caracteres)
-  email: string (único, máximo 255 caracteres)
-  age: number
-  createdAt: Date (automático)
-  updatedAt: Date (automático)
-}
-```
-
 ## Testing
 
-Suite completa de testing con **109 tests** que cubren toda la funcionalidad:
+Suite completa de testing con **83 tests** que cubren toda la funcionalidad:
 
 ```bash
 # Ejecutar todos los tests
@@ -284,26 +246,19 @@ npm run test:watch
 
 ### Cobertura de tests
 
-- **UserService**: Tests unitarios para lógica de negocio
-- **UserController**: Tests de controladores y validación
+- **UserService**: Tests unitarios para lógica de negocio y búsqueda
+- **UserController**: Tests de controladores, validación y búsqueda
 - **UserRoutes**: Tests de rutas y middleware
-- **UserSearch**: Tests de búsqueda avanzada y paginación
-- **Seeders**: Tests de seeders y manejo de datos
-- **DIContainer**: Tests de inyección de dependencias
 
 ### Estructura de tests
 
 ```
-src/app/__tests__/
+src/tests/
 ├── index.test.ts                    # Suite principal
-├── users/                          # Tests de usuarios
-│   ├── UserService.simple.test.ts
-│   ├── UserController.simple.test.ts
-│   ├── UserRoutes.simple.test.ts
-│   └── UserSearch.simple.test.ts
-└── seeders/                        # Tests de seeders
-    ├── UserSeeder.simple.test.ts
-    └── SeederRunner.simple.test.ts
+└── users/                          # Tests de usuarios
+    ├── UserService.test.ts         # Tests del servicio (incluye búsqueda)
+    ├── UserController.test.ts      # Tests del controlador (incluye búsqueda)
+    └── UserRoutes.test.ts          # Tests de rutas
 ```
 
 ## Migraciones
@@ -374,12 +329,8 @@ curl http://localhost:3000/api/users
 ### Estructura de seeders
 
 ```
-src/app/seeders/
-├── index.ts                    # Runner principal de seeders
-├── UserSeeder.ts               # Seeder para usuarios
-└── __tests__/                  # Tests para seeders
-    ├── UserSeeder.simple.test.ts
-    └── SeederRunner.simple.test.ts
+src/seeders/
+└── users.seeders.ts           # Seeder consolidado para usuarios
 ```
 
 ## Funciones y caracteristicas
@@ -398,10 +349,10 @@ src/app/seeders/
 - **Performance**: Consultas optimizadas con LIMIT/OFFSET
 
 ### Testing
-- **109 tests** cubriendo toda la funcionalidad
-- **Mocks inteligentes**: TypeORM, Express, DIContainer
-- **Cobertura completa**: Services, Controllers, Routes, Seeders
-- **Tests de integración**: Endpoints reales con supertest
+- **83 tests** cubriendo toda la funcionalidad
+- **Mocks inteligentes**: TypeORM, Express
+- **Cobertura completa**: Services, Controllers, Routes
+- **Tests consolidados**: Búsqueda incluida en tests principales
 
 ### Seeders
 - **Detección automática**: No duplica datos existentes
@@ -414,6 +365,7 @@ src/app/seeders/
 - **Separación de responsabilidades**: Services, Controllers, Routes
 - **Validación centralizada**: Joi schemas reutilizables
 - **Manejo de errores**: Respuestas consistentes y informativas
+- **Tests simplificados**: Estructura consolidada y mantenible
 
 ## Despliegue
 
