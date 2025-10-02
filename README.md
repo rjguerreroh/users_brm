@@ -108,12 +108,6 @@ curl http://localhost:3000/api/users
 npm run dev
 ```
 
-### Producción
-```bash
-npm run build
-npm start
-```
-
 ### Documentación interactiva
 ```bash
 # Iniciar la aplicación
@@ -146,8 +140,7 @@ npm run seed:clear   # Limpiar todos los datos
 - `GET /` - Información de la API
 
 ### Documentación
-- `GET /api-docs` - Documentación Swagger UI interactiva
-- `GET /api-docs.json` - Especificación OpenAPI JSON
+- `GET /api-docs` - Documentación Swagger UI
 
 ### Usuarios
 - `GET /api/users` - Listar todos los usuarios (con paginación)
@@ -194,11 +187,8 @@ src/
 
 ## Documentación Swagger
 
-La API incluye documentación interactiva completa con Swagger UI:
-
 ### Acceso a la documentación
-- **Swagger UI**: `http://localhost:3000/api-docs` - Interfaz interactiva
-- **OpenAPI JSON**: `http://localhost:3000/api-docs.json` - 
+- **Swagger UI**: `http://localhost:3000/api-docs`
 
 ### Estructura de documentación
 ```
@@ -228,8 +218,6 @@ src/swagger/
 
 ## Testing
 
-Suite completa de testing con **83 tests** que cubren toda la funcionalidad:
-
 ```bash
 # Ejecutar todos los tests
 npm test
@@ -243,20 +231,9 @@ npm run test:watch
 
 ### Cobertura de tests
 
-- **UserService**: Tests unitarios para lógica de negocio y búsqueda
-- **UserController**: Tests de controladores, validación y búsqueda
-- **UserRoutes**: Tests de rutas y middleware
-
-### Estructura de tests
-
-```
-src/tests/
-├── index.test.ts                    # Suite principal
-└── users/                          # Tests de usuarios
-    ├── UserService.test.ts         # Tests del servicio (incluye búsqueda)
-    ├── UserController.test.ts      # Tests del controlador (incluye búsqueda)
-    └── UserRoutes.test.ts          # Tests de rutas
-```
+- **userService**: Tests unitarios para lógica de negocio y búsqueda
+- **userController**: Tests de controladores, validación y búsqueda
+- **userRoutes**: Tests de rutas y middleware
 
 ## Migraciones
 
@@ -273,7 +250,6 @@ npm run migration:revert
 
 ## Seeders
 
-
 ### Comandos disponibles
 
 ```bash
@@ -287,75 +263,22 @@ npm run seed:reset
 npm run seed:clear
 ```
 
-### Datos creados
-
-Los seeders crean **20 usuarios de prueba** con:
-- **Nombres realistas en español**: Juan Pérez, María García, etc.
-- **Emails únicos**: Formato `nombre.apellido@example.com`
-- **Edades variadas**: Entre 24-35 años para testing
-- **Datos consistentes**: Estructura uniforme para pruebas
-- **Validación automática**: No duplica datos existentes
-
-### Características técnicas
-
-- **Detección inteligente**: Verifica si ya existen datos antes de crear
-- **Manejo de errores**: Logs detallados y manejo de excepciones
-- **Transacciones**: Operaciones atómicas para consistencia
-- **Logging completo**: Progreso detallado durante la ejecución
-- **Tests incluidos**: Cobertura completa con mocks
-
-### Ejemplo de uso completo
-
-```bash
-# 1. Levantar la base de datos
-docker-compose up -d
-
-# 2. Ejecutar migraciones
-npm run migration:run
-
-# 3. Poblar con datos de prueba
-npm run seed:run
-
-# 4. Iniciar la aplicación
-npm run dev
-
-# 5. Verificar datos (opcional)
-curl http://localhost:3000/api/users
-```
-
-### Estructura de seeders
-
-```
-src/seeders/
-└── users.seeders.ts           # Seeder consolidado para usuarios
-```
-
 ## Funciones y caracteristicas
 
 ### Búsqueda
 - **Filtros múltiples**: Por nombre, email, edad, fechas
-- **Búsqueda de texto**: ILIKE para búsquedas flexibles
+- **Búsqueda de texto**: búsquedas flexibles
 - **Ordenamiento**: Por cualquier campo (ASC/DESC)
-- **Paginación**: Control total sobre resultados
-- **Validación**: Parámetros validados con Joi
 
 ### Paginación
 - **Metadatos completos**: Total, páginas, navegación
 - **Límites configurables**: 1-100 elementos por página
-- **Navegación**: hasNext, hasPrev para UI
 - **Performance**: Consultas optimizadas con LIMIT/OFFSET
 
 ### Testing
-- **83 tests** cubriendo toda la funcionalidad
 - **Mocks inteligentes**: TypeORM, Express
 - **Cobertura completa**: Services, Controllers, Routes
 - **Tests consolidados**: Búsqueda incluida en tests principales
-
-### Seeders
-- **Detección automática**: No duplica datos existentes
-- **Datos realistas**: 20 usuarios con nombres españoles
-- **Manejo de errores**: Logs detallados y rollback
-- **Transacciones**: Operaciones atómicas garantizadas
 
 ### Arquitectura
 - **Inyección de dependencias**: DIContainer para gestión
