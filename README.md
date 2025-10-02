@@ -12,7 +12,7 @@ API REST para gestión de usuarios desarrollada con Node.js, TypeScript y Postgr
 - **CORS**: Configurado para desarrollo
 - **Docker**: Configuración completa con Docker Compose
 - **Seeders**: Sistema de datos de prueba con 20 usuarios realistas
-- **Testing**: Suite completa de tests unitarios (109 tests)
+- **Testing**: Suite completa de tests unitarios (83 tests)
 - **Paginación**: Sistema de paginación avanzado
 - **Búsqueda**: Endpoint de búsqueda avanzada con filtros
 - **Documentación**: Swagger UI integrado para documentación interactiva
@@ -26,7 +26,7 @@ cd users
 npm install
 
 # 2. Configurar base de datos
-npm run docker:up
+docker-compose up -d
 npm run migration:run
 npm run seed:run
 
@@ -80,7 +80,7 @@ curl http://localhost:3000/api/users
    **Opción A: Con Docker (Recomendado)**
    ```bash
    # Levantar servicios de base de datos
-   npm run docker:up
+   docker-compose up -d
    
    # Ejecutar migraciones
    npm run migration:run
@@ -133,20 +133,10 @@ npm run seed:reset   # Limpiar y volver a ejecutar seeders
 npm run seed:clear   # Limpiar todos los datos
 ```
 
-### Docker
-```bash
-npm run docker:up      # Levantar servicios
-npm run docker:down    # Detener servicios
-npm run docker:logs    # Ver logs
-npm run docker:restart # Reiniciar servicios
-npm run docker:clean   # Limpiar volúmenes
-```
-
 ## API Endpoints
 
 ### Información general
 - `GET /` - Información de la API
-- `GET /health` - Health check
 
 ### Documentación
 - `GET /api-docs` - Documentación Swagger UI interactiva
@@ -210,7 +200,7 @@ src/swagger/
 ```
 
 ### Endpoints documentados
-- **General**: `/`, `/health` - Información y estado de la API
+- **General**: `/` - Información de la API
 - **Usuarios**: CRUD completo con paginación y búsqueda avanzada
 - **Parámetros**: Paginación, filtros, ordenamiento y búsqueda
 - **Respuestas**: Esquemas de éxito y error para todos los endpoints
@@ -311,7 +301,7 @@ Los seeders crean **20 usuarios de prueba** con:
 
 ```bash
 # 1. Levantar la base de datos
-npm run docker:up
+docker-compose up -d
 
 # 2. Ejecutar migraciones
 npm run migration:run
@@ -369,13 +359,16 @@ src/seeders/
 
 ## Despliegue
 
-### Docker
+### Docker para Producción
 ```bash
-# Construir imagen
+# Construir imagen de la aplicación
 docker build -t users-api .
 
-# Ejecutar contenedor
-docker run -p 3000:3000 users-api
+# Ejecutar contenedor de la aplicación
+docker run -p 3000:3000 --env-file .env users-api
+
+# O usar docker-compose para desarrollo completo
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
 ### Variables de entorno para producción

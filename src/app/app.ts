@@ -65,40 +65,6 @@ class App {
         });
       });
 
-      /**
-       * @swagger
-       * /health:
-       *   get:
-       *     summary: Health Check
-       *     description: Verifica el estado de la API
-       *     tags: [General]
-       *     responses:
-       *       200:
-       *         description: API funcionando correctamente
-       *         content:
-       *           application/json:
-       *             schema:
-       *               type: object
-       *               properties:
-       *                 status:
-       *                   type: string
-       *                   example: "OK"
-       *                 uptime:
-       *                   type: number
-       *                   example: 123.456
-       *                 timestamp:
-       *                   type: string
-       *                   format: date-time
-       *                   example: "2024-01-15T10:30:00.000Z"
-       */
-      this.app.get('/health', (req, res) => {
-        console.log(req.originalUrl);
-        res.json({
-          status: 'OK',
-          uptime: process.uptime(),
-          timestamp: new Date().toISOString()
-        });
-      });
 
       // Configurar Swagger
       setupSwagger(this.app);
@@ -128,7 +94,6 @@ class App {
       // Iniciar servidor
       this.app.listen(this.port, () => {
         console.log(`Servidor ejecutándose en http://localhost:${this.port}`);
-        console.log(`Health check disponible en http://localhost:${this.port}/health`);
         console.log(`Entorno: ${this.nodeEnv}`);
         console.log(`Base de datos: PostgreSQL con TypeORM conectada`);
         console.log('\n');

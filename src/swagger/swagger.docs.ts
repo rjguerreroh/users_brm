@@ -25,28 +25,6 @@ import swaggerUi from 'swagger-ui-express';
  *                   example: "1.0.0"
  */
 
-/**
- * @swagger
- * /health:
- *   get:
- *     summary: Health check
- *     description: Verifica el estado de la API
- *     tags: [General]
- *     responses:
- *       200:
- *         description: API funcionando correctamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "OK"
- *                 timestamp:
- *                   type: string
- *                   format: date-time
- */
 
 /**
  * @swagger
