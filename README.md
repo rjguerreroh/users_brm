@@ -11,6 +11,30 @@ API REST para gestión de usuarios desarrollada con Node.js, TypeScript y Postgr
 - **Seguridad**: Helmet para headers de seguridad
 - **CORS**: Configurado para desarrollo
 - **Docker**: Configuración completa con Docker Compose
+- **Seeders**: Sistema de datos de prueba con 20 usuarios realistas
+- **Testing**: Suite completa de tests unitarios (109 tests)
+- **Paginación**: Sistema de paginación avanzado
+- **Búsqueda**: Endpoint de búsqueda avanzada con filtros
+
+## ⚡ Quick Start
+
+```bash
+# 1. Clonar e instalar
+git clone <repository-url>
+cd users
+npm install
+
+# 2. Configurar base de datos
+npm run docker:up
+npm run migration:run
+npm run seed:run
+
+# 3. Iniciar aplicación
+npm run dev
+
+# 4. Probar endpoints
+curl http://localhost:3000/api/users
+```
 
 ## 📋 Requisitos
 
@@ -51,12 +75,20 @@ API REST para gestión de usuarios desarrollada con Node.js, TypeScript y Postgr
 
    **Opción A: Con Docker (Recomendado)**
    ```bash
+   # Levantar servicios de base de datos
    npm run docker:up
+   
+   # Ejecutar migraciones
+   npm run migration:run
+   
+   # Poblar con datos de prueba
+   npm run seed:run
    ```
 
    **Opción B: PostgreSQL local**
    - Crear base de datos: `users_db`
    - Ejecutar migraciones: `npm run migration:run`
+   - Poblar con datos: `npm run seed:run`
 
 ## 🚀 Uso
 
@@ -79,6 +111,15 @@ npm run start        # Ejecutar en producción
 npm run watch        # Desarrollo con watch mode
 npm run clean        # Limpiar directorio dist
 ```
+
+### Seeders (Datos de prueba)
+```bash
+npm run seed:run     # Ejecutar seeders (solo si no hay datos)
+npm run seed:reset   # Limpiar y volver a ejecutar seeders
+npm run seed:clear   # Limpiar todos los datos
+```
+
+Los seeders crean 20 usuarios de prueba con datos realistas para testing y desarrollo.
 
 ### Docker
 ```bash
@@ -286,12 +327,41 @@ src/
 
 ## 🧪 Testing
 
+Suite completa de testing con **109 tests** que cubren toda la funcionalidad:
+
 ```bash
-# Ejecutar tests
+# Ejecutar todos los tests
 npm test
 
 # Tests con coverage
 npm run test:coverage
+
+# Tests en modo watch
+npm run test:watch
+```
+
+### Cobertura de tests
+
+- **UserService**: Tests unitarios para lógica de negocio
+- **UserController**: Tests de controladores y validación
+- **UserRoutes**: Tests de rutas y middleware
+- **UserSearch**: Tests de búsqueda avanzada y paginación
+- **Seeders**: Tests de seeders y manejo de datos
+- **DIContainer**: Tests de inyección de dependencias
+
+### Estructura de tests
+
+```
+src/app/__tests__/
+├── index.test.ts                    # Suite principal
+├── users/                          # Tests de usuarios
+│   ├── UserService.simple.test.ts
+│   ├── UserController.simple.test.ts
+│   ├── UserRoutes.simple.test.ts
+│   └── UserSearch.simple.test.ts
+└── seeders/                        # Tests de seeders
+    ├── UserSeeder.simple.test.ts
+    └── SeederRunner.simple.test.ts
 ```
 
 ## 📦 Migraciones
@@ -306,6 +376,119 @@ npm run migration:run
 # Revertir migración
 npm run migration:revert
 ```
+
+## 🌱 Seeders
+
+Los seeders permiten poblar la base de datos con datos de prueba para desarrollo y testing. Incluyen validación inteligente para evitar duplicados y manejo de errores robusto.
+
+### Comandos disponibles
+
+```bash
+# Ejecutar seeders (solo si la base de datos está vacía)
+npm run seed:run
+
+# Limpiar datos existentes y ejecutar seeders
+npm run seed:reset
+
+# Limpiar todos los datos sin crear nuevos
+npm run seed:clear
+```
+
+### Datos creados
+
+Los seeders crean **20 usuarios de prueba** con:
+- **Nombres realistas en español**: Juan Pérez, María García, etc.
+- **Emails únicos**: Formato `nombre.apellido@example.com`
+- **Edades variadas**: Entre 24-35 años para testing
+- **Datos consistentes**: Estructura uniforme para pruebas
+- **Validación automática**: No duplica datos existentes
+
+### Características técnicas
+
+- **Detección inteligente**: Verifica si ya existen datos antes de crear
+- **Manejo de errores**: Logs detallados y manejo de excepciones
+- **Transacciones**: Operaciones atómicas para consistencia
+- **Logging completo**: Progreso detallado durante la ejecución
+- **Tests incluidos**: Cobertura completa con mocks
+
+### Ejemplo de uso completo
+
+```bash
+# 1. Levantar la base de datos
+npm run docker:up
+
+# 2. Ejecutar migraciones
+npm run migration:run
+
+# 3. Poblar con datos de prueba
+npm run seed:run
+
+# 4. Iniciar la aplicación
+npm run dev
+
+# 5. Verificar datos (opcional)
+curl http://localhost:3000/api/users
+```
+
+### Estructura de seeders
+
+```
+src/app/seeders/
+├── index.ts                    # Runner principal de seeders
+├── UserSeeder.ts               # Seeder para usuarios
+└── __tests__/                  # Tests para seeders
+    ├── UserSeeder.simple.test.ts
+    └── SeederRunner.simple.test.ts
+```
+
+### Salida de ejemplo
+
+```bash
+🌱 Iniciando seeders...
+==================================================
+✅ Conexión a la base de datos establecida
+🌱 Iniciando seeder de usuarios...
+✅ Seeder completado: 20 usuarios creados
+📊 Usuarios creados:
+   1. Juan Pérez (juan.perez@example.com) - 30 años
+   2. María García (maria.garcia@example.com) - 25 años
+   ...
+==================================================
+🎉 Todos los seeders completados exitosamente
+```
+
+## ✨ Features Detalladas
+
+### 🔍 Búsqueda Avanzada
+- **Filtros múltiples**: Por nombre, email, edad, fechas
+- **Búsqueda de texto**: ILIKE para búsquedas flexibles
+- **Ordenamiento**: Por cualquier campo (ASC/DESC)
+- **Paginación**: Control total sobre resultados
+- **Validación**: Parámetros validados con Joi
+
+### 📊 Paginación Inteligente
+- **Metadatos completos**: Total, páginas, navegación
+- **Límites configurables**: 1-100 elementos por página
+- **Navegación**: hasNext, hasPrev para UI
+- **Performance**: Consultas optimizadas con LIMIT/OFFSET
+
+### 🧪 Testing Robusto
+- **109 tests** cubriendo toda la funcionalidad
+- **Mocks inteligentes**: TypeORM, Express, DIContainer
+- **Cobertura completa**: Services, Controllers, Routes, Seeders
+- **Tests de integración**: Endpoints reales con supertest
+
+### 🌱 Seeders Inteligentes
+- **Detección automática**: No duplica datos existentes
+- **Datos realistas**: 20 usuarios con nombres españoles
+- **Manejo de errores**: Logs detallados y rollback
+- **Transacciones**: Operaciones atómicas garantizadas
+
+### 🏗️ Arquitectura Limpia
+- **Inyección de dependencias**: DIContainer para gestión
+- **Separación de responsabilidades**: Services, Controllers, Routes
+- **Validación centralizada**: Joi schemas reutilizables
+- **Manejo de errores**: Respuestas consistentes y informativas
 
 ## 🚀 Despliegue
 

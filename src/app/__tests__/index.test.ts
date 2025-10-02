@@ -3,6 +3,8 @@ import './users/UserService.simple.test';
 import './users/UserController.simple.test';
 import './users/UserRoutes.simple.test';
 import './users/UserSearch.simple.test';
+import './seeders/UserSeeder.simple.test';
+import './seeders/SeederRunner.simple.test';
 
 describe('Test Suite', () => {
   it('should run all tests', () => {

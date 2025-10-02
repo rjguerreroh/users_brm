@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { DataSource } from 'typeorm';
 import { User } from '../app/users/entities/User';
 
@@ -19,9 +20,9 @@ export const AppDataSource = new DataSource({
 export const initializeDatabase = async (): Promise<void> => {
   try {
     await AppDataSource.initialize();
-    console.log('✅ TypeORM conectado a PostgreSQL correctamente');
+    console.log('TypeORM conectado a PostgreSQL correctamente');
   } catch (error) {
-    console.error('❌ Error al conectar con TypeORM:', error);
+    console.error('Error al conectar con TypeORM:', error);
     throw error;
   }
 };
@@ -30,7 +31,7 @@ export const initializeDatabase = async (): Promise<void> => {
 export const closeDatabase = async (): Promise<void> => {
   try {
     await AppDataSource.destroy();
-    console.log('🔌 Conexión TypeORM cerrada');
+    console.log('Conexión TypeORM cerrada');
   } catch (error) {
     console.error('Error al cerrar TypeORM:', error);
   }
